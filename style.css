@@ -1,7 +1,9 @@
 :root {
     --body: #f8f9fa;
     --main_color: #fe8f34;
+    --equal_pressed_color: #fe7301;
     --btn_border: #aeaeb7;
+    --btn_pressed_color: #e1e6ea;
     --white: #fff;
 }
 
@@ -61,6 +63,13 @@ body{
     font-family: inherit;
 }
 
+button:active {
+    background-color: var(--btn_pressed_color);
+}
+
+.equalSign:active {
+    background-color: var(--equal_pressed_color);
+}
 
 
 .operator, .color{
