@@ -5,29 +5,48 @@ const clearAllBtn = document.querySelector('button[value=clearAll]');
 const equalSign = document.querySelector('.equalSign');
 const operatorSigns = document.querySelectorAll('.operator');
 const sqrtBtn = document.querySelector('button[value=sqrt]');
+const decimal = document.querySelector('.decimal');
 
 let firstOperand = '';
 let secondOperand = '';
 let operator = '';
 let operatorPressed = false;
+let equalPressed = false;
+let sqrtPresed = false;
+
+
 
 digitButtons.forEach((button) => {
     button.addEventListener('click', (e) => {
+
         let result = button.value;
+
         if(display.textContent == '0') {
             display.textContent = '';
-        }
+        } 
+
         if(operatorPressed) {
             operatorPressed = false;
+            if(display.textContent !== '0.'){
+                display.textContent = '';
+            }
+        }
+
+        if(equalPressed || sqrtPresed){
+            equalPressed = false;
+            sqrtPresed = false;
             display.textContent = '';
         }
+        
         if(display.textContent.length < 16){
             display.textContent += result;
         }
     });
 });
 
+
 clearBtn.addEventListener('click', (e) => {
+
     if(display.textContent.length > 1){
         display.textContent = display.textContent.slice(0, -1);
     } else {
@@ -35,9 +54,13 @@ clearBtn.addEventListener('click', (e) => {
     }
 });
 
+
 clearAllBtn.addEventListener('click', (e) => {
     display.textContent = '0';
+    firstOperand = '';
+    secondOperand = '';
 });
+
 
 operatorSigns.forEach((sign) => {
     sign.addEventListener('click', (e) => {
@@ -47,22 +70,42 @@ operatorSigns.forEach((sign) => {
     });
 });
 
-equalSign.addEventListener('click', function(){
-    secondOperand = display.textContent;
-    let result = operate(firstOperand, operator, secondOperand);
-    if(result >= 1e+16) {
-        result = result.toExponential(0);
-        display.textContent = result;
+
+function fixLength(num){
+    num = num.toString();
+    if(num.length > 16){
+        num = num.slice(0, 16);
     }
-    display.textContent = result;
+    return num;
+}
+
+
+equalSign.addEventListener('click', function(){
+
+    secondOperand = display.textContent;
+    
+    if(firstOperand === ''){
+        display.textContent = secondOperand
+    } else {
+        let result = operate(firstOperand, operator, secondOperand);
+        firstOperand = '';
+        secondOperand = '';
+        equalPressed = true;
+
+        if(Math.abs(result) > 1e+15 || Math.abs(result) < 1e-15){
+            result = result.toExponential(4);
+        } 
+
+        display.textContent = fixLength(result);
+    } 
 });
 
 
 sqrtBtn.addEventListener('click', function(){
-    let result = Math.sqrt(display.textContent).toFixed(14);
-    if(result)
-    display.textContent = result;
-
+    sqrtPresed = true;
+    let result = display.textContent;
+    result = Math.sqrt(result);
+    display.textContent = fixLength(result);
 });
 
 
@@ -79,12 +122,13 @@ function multiply(a, b){
 }
 
 function divide(a, b){
+    if(b == 0){
+        return NaN;
+    }
     return a / b;
 }
 
-function sqrt(a){
-    return Math.sqrt(a);
-}
+
 
 function operate(operand1, operator, operand2){
     switch(operator){
@@ -99,3 +143,33 @@ function operate(operand1, operator, operand2){
     }
 }
 
+function checkDecimalPoint(input) {
+
+    let arrOfDecimal = input.match(/\./g);
+    
+    if(arrOfDecimal === null){
+        return false;
+    }
+    return true;
+}
+
+decimal.addEventListener('click', function(){
+
+    let result = display.textContent;
+
+    if(checkDecimalPoint(result)) {
+        if (operatorPressed) {
+            result = '0.';
+        }
+    } else {
+        result += '.';
+    }
+
+    if(equalPressed){
+        equalPressed = false;
+        result = '0.';
+    }
+
+
+    display.textContent = result;
+});
