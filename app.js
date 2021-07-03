@@ -45,14 +45,16 @@ digitButtons.forEach((button) => {
 });
 
 
-clearBtn.addEventListener('click', (e) => {
+clearBtn.addEventListener('click', deleteOneDigit);
 
+
+function deleteOneDigit (e){
     if(display.textContent.length > 1){
         display.textContent = display.textContent.slice(0, -1);
     } else {
         display.textContent = '0';
-    }
-});
+    } 
+}
 
 
 clearAllBtn.addEventListener('click', (e) => {
@@ -173,3 +175,38 @@ decimal.addEventListener('click', function(){
 
     display.textContent = result;
 });
+
+
+window.addEventListener('keydown', function(event){
+    
+    const keys = [
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
+        ".", "+", "-", "*", "/", "=",
+        "Enter", "Backspace", "Delete",
+      ];
+      const key = event.key;
+
+      if (!keys.includes(event.key)){
+          return;
+      } else {
+        switch (key){
+            case "Backspace":
+            deleteOneDigit();
+        }
+      }   
+});
+
+
+// let exp;
+//     if (event.key == "Enter") {
+//         exp = document.querySelector(`button[value="="]`);    
+//     } else if (event.key == "Backspace") {
+//         exp = document.querySelector(`button[value="clear"]`);
+//     } else if (event.key == "Delete") {
+//         exp = document.querySelector(`button[value="clearAll"]`);
+//     } else {
+//         exp = document.querySelector(`button[value="${event.key}"]`);
+//     }
+
+//     if(!exp) return;
+//     display.textContent += exp.value;
