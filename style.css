@@ -76,8 +76,6 @@ button:active {
     color: var(--main_color);
 }
 
-
-
 .equalSign {
     grid-column: 3 / 5;
     background-color: var(--main_color);
@@ -85,3 +83,20 @@ button:active {
     border: none;
 }
 
+@media (max-width: 500px){
+    .calculator {
+        margin: 70px auto 0;
+        max-width: 80vw;
+        padding: 10px;
+    }
+    .calc_grid {
+        grid-gap: 8px;
+    }
+    .display {
+        font-size: 1.5em;
+    }
+    button {
+        font-size: 1.3em;
+        padding: 15px;
+    }
+}
