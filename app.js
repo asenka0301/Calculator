@@ -15,63 +15,50 @@ let equalPressed = false;
 let sqrtPresed = false;
 
 
+function inputDigit(value) {
+    let result = value;
 
-digitButtons.forEach((button) => {
-    button.addEventListener('click', (e) => {
+    if(display.textContent == '0') {
+        display.textContent = '';
+    } 
 
-        let result = button.value;
-
-        if(display.textContent == '0') {
-            display.textContent = '';
-        } 
-
-        if(operatorPressed) {
-            operatorPressed = false;
-            if(display.textContent !== '0.'){
-                display.textContent = '';
-            }
-        }
-
-        if(equalPressed || sqrtPresed){
-            equalPressed = false;
-            sqrtPresed = false;
+    if(operatorPressed) {
+        operatorPressed = false;
+        if(display.textContent !== '0.'){
             display.textContent = '';
         }
-        
-        if(display.textContent.length < 16){
-            display.textContent += result;
-        }
-    });
-});
+    }
 
+    if(equalPressed || sqrtPresed){
+        equalPressed = false;
+        sqrtPresed = false;
+        display.textContent = '';
+    }
+    
+    if(display.textContent.length < 16){
+        display.textContent += result;
+    }
+}
 
-clearBtn.addEventListener('click', deleteOneDigit);
-
-
-function deleteOneDigit (e){
-    if(display.textContent.length > 1){
+function deleteOneDigit() {
+    if (display.textContent.length > 1) {
         display.textContent = display.textContent.slice(0, -1);
     } else {
         display.textContent = '0';
     } 
 }
 
-
-clearAllBtn.addEventListener('click', (e) => {
+function clearAll() {
     display.textContent = '0';
     firstOperand = '';
     secondOperand = '';
-});
+}
 
-
-operatorSigns.forEach((sign) => {
-    sign.addEventListener('click', (e) => {
-        operator = sign.value;
-        firstOperand = display.textContent;
-        operatorPressed = true;
-    });
-});
-
+function readOperator(value) {
+    operator = value;
+    firstOperand = display.textContent;
+    operatorPressed = true;
+}
 
 function fixLength(num){
     num = num.toString();
@@ -81,12 +68,11 @@ function fixLength(num){
     return num;
 }
 
-
-equalSign.addEventListener('click', function(){
+function inputEqualSign() {
 
     secondOperand = display.textContent;
-    
-    if(firstOperand === ''){
+
+    if(firstOperand === '') {
         display.textContent = secondOperand
     } else {
         let result = operate(firstOperand, operator, secondOperand);
@@ -94,14 +80,13 @@ equalSign.addEventListener('click', function(){
         secondOperand = '';
         equalPressed = true;
 
-        if(Math.abs(result) > 1e+15 || Math.abs(result) < 1e-15){
+        if((Math.abs(result) > 1e+15 || Math.abs(result) < 1e-15 && result != 0)) {
             result = result.toExponential(4);
         } 
-
+    
         display.textContent = fixLength(result);
     } 
-});
-
+}
 
 sqrtBtn.addEventListener('click', function(){
     sqrtPresed = true;
@@ -130,8 +115,6 @@ function divide(a, b){
     return a / b;
 }
 
-
-
 function operate(operand1, operator, operand2){
     switch(operator){
         case '+':
@@ -155,8 +138,7 @@ function checkDecimalPoint(input) {
     return true;
 }
 
-decimal.addEventListener('click', function(){
-
+function inputDecimal(){
     let result = display.textContent;
 
     if(checkDecimalPoint(result)) {
@@ -174,39 +156,61 @@ decimal.addEventListener('click', function(){
 
 
     display.textContent = result;
-});
+}
 
-
-window.addEventListener('keydown', function(event){
-    
+function keyboardSupport(event){
     const keys = [
         "1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
         ".", "+", "-", "*", "/", "=",
         "Enter", "Backspace", "Delete",
       ];
-      const key = event.key;
+    const key = event.key;
 
-      if (!keys.includes(event.key)){
-          return;
-      } else {
-        switch (key){
-            case "Backspace":
+    if (!keys.includes(key)){
+        return;
+    } else {
+    switch (key){
+        case "Backspace":
             deleteOneDigit();
+            break;
+        case "Delete":
+            clearAll();
+            break;
+        case "Enter":
+        case "=":
+            inputEqualSign();
+            break;
+        case ".":
+            inputDecimal();
+            break;
+        case "-":
+        case "+":
+        case "/":
+        case "*":
+            readOperator(key);
+            break;
+        default: 
+            inputDigit(key);
+            break;   
         }
-      }   
+    }  
+}
+
+digitButtons.forEach((button) => {
+    button.addEventListener('click', (e) => {
+        inputDigit(button.value);
+    });
 });
 
+operatorSigns.forEach((sign) => {
+    sign.addEventListener('click', (e) => {
+        readOperator(sign.value);
+    });
+});
 
-// let exp;
-//     if (event.key == "Enter") {
-//         exp = document.querySelector(`button[value="="]`);    
-//     } else if (event.key == "Backspace") {
-//         exp = document.querySelector(`button[value="clear"]`);
-//     } else if (event.key == "Delete") {
-//         exp = document.querySelector(`button[value="clearAll"]`);
-//     } else {
-//         exp = document.querySelector(`button[value="${event.key}"]`);
-//     }
+equalSign.addEventListener ('click', inputEqualSign);
+decimal.addEventListener('click', inputDecimal);
+clearBtn.addEventListener('click', deleteOneDigit);
+clearAllBtn.addEventListener('click', clearAll);
+window.addEventListener('keydown', keyboardSupport);
 
-//     if(!exp) return;
-//     display.textContent += exp.value;
